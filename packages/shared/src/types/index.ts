@@ -20,6 +20,10 @@ export type {
   CompanySkillCreateRequest,
   CompanySkillFileDetail,
   CompanySkillFileUpdateRequest,
+  SkillContractMetadata,
+  SkillRoutingSignal,
+  SkillOutputContract,
+  SkillProvenance,
 } from "./company-skill.js";
 export type {
   AgentSkillSyncMode,

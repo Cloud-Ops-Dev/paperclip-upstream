@@ -35,6 +35,10 @@ export const companySkillListItemSchema = companySkillSchema.extend({
   editableReason: z.string().nullable(),
   sourceLabel: z.string().nullable(),
   sourceBadge: companySkillSourceBadgeSchema,
+  // Skills-loop V2 badge fields
+  routingPriority: z.number().nullable(),
+  maturity: z.string().nullable(),
+  contractVersion: z.string().nullable(),
 });
 
 export const companySkillUsageAgentSchema = z.object({
@@ -53,6 +57,10 @@ export const companySkillDetailSchema = companySkillSchema.extend({
   editableReason: z.string().nullable(),
   sourceLabel: z.string().nullable(),
   sourceBadge: companySkillSourceBadgeSchema,
+  // Skills-loop V2 badge fields
+  routingPriority: z.number().nullable(),
+  maturity: z.string().nullable(),
+  contractVersion: z.string().nullable(),
 });
 
 export const companySkillUpdateStatusSchema = z.object({

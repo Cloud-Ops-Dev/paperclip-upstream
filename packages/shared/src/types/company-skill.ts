@@ -11,6 +11,77 @@ export interface CompanySkillFileInventoryEntry {
   kind: "skill" | "markdown" | "reference" | "script" | "asset" | "other";
 }
 
+// ---------------------------------------------------------------------------
+// Skills-loop V2 contract metadata (stored in CompanySkill.metadata)
+// ---------------------------------------------------------------------------
+
+/** Routing trigger conditions from skills-loop V2 contract. */
+export interface SkillRoutingTrigger {
+  keywords?: string[];
+  patterns?: string[];
+  task_types?: string[];
+  tool_intensity?: string[];
+  context_signals?: string[];
+}
+
+/** Routing exclusion rules from skills-loop V2 contract. */
+export interface SkillRoutingExclusion {
+  keywords?: string[];
+  patterns?: string[];
+  task_types?: string[];
+  conflicts_with?: string[];
+}
+
+/** Full routing signal from skills-loop V2 contract. */
+export interface SkillRoutingSignal {
+  triggers?: SkillRoutingTrigger;
+  exclusions?: SkillRoutingExclusion;
+  priority?: number;
+  confidence_threshold?: number;
+}
+
+/** Output field definition from skills-loop V2 contract. */
+export interface SkillOutputField {
+  name: string;
+  type: string;
+  required?: boolean;
+  description?: string;
+  constraints?: Record<string, unknown>;
+}
+
+/** Output contract from skills-loop V2 contract. */
+export interface SkillOutputContract {
+  schema_fields?: SkillOutputField[];
+  guarantees?: string[];
+  max_latency_ms?: number | null;
+  idempotent?: boolean;
+}
+
+/** Provenance metadata from skills-loop V2 contract. */
+export interface SkillProvenance {
+  trust_level?: "trusted" | "reviewed" | "unreviewed";
+  source_type?: string;
+  source_uri?: string;
+  reviewed_by?: string;
+  reviewed_at?: string | null;
+  safety_scan_passed?: boolean | null;
+  safety_scan_at?: string | null;
+}
+
+/**
+ * Skills-loop V2 contract fields stored in CompanySkill.metadata.
+ * Extracted from SKILL.md YAML frontmatter during import.
+ * Absent for V1 skills (no routing, no contracts).
+ */
+export interface SkillContractMetadata {
+  skillsLoopVersion?: "2";
+  routing?: SkillRoutingSignal;
+  outputContract?: SkillOutputContract;
+  provenance?: SkillProvenance;
+  owner?: string;
+  maturity?: "draft" | "active" | "deprecated";
+}
+
 export interface CompanySkill {
   id: string;
   companyId: string;
@@ -51,6 +122,10 @@ export interface CompanySkillListItem {
   sourceLabel: string | null;
   sourceBadge: CompanySkillSourceBadge;
   sourcePath: string | null;
+  // Skills-loop V2 metadata (surfaced for UI badges)
+  routingPriority: number | null;
+  maturity: string | null;
+  contractVersion: string | null;
 }
 
 export interface CompanySkillUsageAgent {
@@ -70,6 +145,10 @@ export interface CompanySkillDetail extends CompanySkill {
   sourceLabel: string | null;
   sourceBadge: CompanySkillSourceBadge;
   sourcePath: string | null;
+  // Skills-loop V2 metadata (surfaced for UI)
+  routingPriority: number | null;
+  maturity: string | null;
+  contractVersion: string | null;
 }
 
 export interface CompanySkillUpdateStatus {

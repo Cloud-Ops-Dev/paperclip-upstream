@@ -25,6 +25,7 @@ import type {
   CompanySkillTrustLevel,
   CompanySkillUpdateStatus,
   CompanySkillUsageAgent,
+  SkillContractMetadata,
 } from "@paperclipai/shared";
 import { normalizeAgentUrlKey } from "@paperclipai/shared";
 import { findServerAdapter } from "../adapters/index.js";
@@ -469,6 +470,55 @@ function parseFrontmatterMarkdown(raw: string): { frontmatter: Record<string, un
   };
 }
 
+/**
+ * Extract skills-loop V2 contract metadata from SKILL.md frontmatter.
+ * Returns contract fields to merge into CompanySkill.metadata, or null
+ * if the skill has no V2 fields.
+ */
+function extractSkillContractMetadata(frontmatter: Record<string, unknown>): SkillContractMetadata | null {
+  const version = asString(frontmatter.version);
+  if (version !== "2") return null;
+
+  const routing = isPlainRecord(frontmatter.routing) ? frontmatter.routing : undefined;
+  const outputContract = isPlainRecord(frontmatter.output_contract) ? frontmatter.output_contract : undefined;
+  const provenance = isPlainRecord(frontmatter.provenance) ? frontmatter.provenance : undefined;
+  const owner = asString(frontmatter.owner);
+  const maturity = asString(frontmatter.maturity);
+
+  // Only return if at least one V2 field is present
+  if (!routing && !outputContract && !provenance && !owner && !maturity) return null;
+
+  return {
+    skillsLoopVersion: "2",
+    ...(routing ? { routing: routing as SkillContractMetadata["routing"] } : {}),
+    ...(outputContract ? { outputContract: outputContract as SkillContractMetadata["outputContract"] } : {}),
+    ...(provenance ? { provenance: provenance as SkillContractMetadata["provenance"] } : {}),
+    ...(owner ? { owner } : {}),
+    ...(maturity ? { maturity: maturity as SkillContractMetadata["maturity"] } : {}),
+  };
+}
+
+/** Extract skills-loop V2 badge fields from skill metadata for list/detail views. */
+function getSkillContractBadges(metadata: Record<string, unknown> | null): {
+  routingPriority: number | null;
+  maturity: string | null;
+  contractVersion: string | null;
+} {
+  if (!metadata || !isPlainRecord(metadata)) {
+    return { routingPriority: null, maturity: null, contractVersion: null };
+  }
+  const slVersion = asString(metadata.skillsLoopVersion);
+  if (!slVersion) {
+    return { routingPriority: null, maturity: null, contractVersion: null };
+  }
+  const routing = isPlainRecord(metadata.routing) ? metadata.routing : null;
+  return {
+    routingPriority: typeof routing?.priority === "number" ? routing.priority : null,
+    maturity: asString(metadata.maturity) ?? null,
+    contractVersion: slVersion,
+  };
+}
+
 async function fetchText(url: string) {
   const response = await fetch(url);
   if (!response.ok) {
@@ -763,7 +813,10 @@ function readInlineSkillImports(companyId: string, files: Record<string, string>
       trustLevel: deriveTrustLevel(inventory),
       compatibility: "compatible",
       fileInventory: inventory,
-      metadata: source.metadata,
+      metadata: {
+        ...source.metadata,
+        ...extractSkillContractMetadata(parsed.frontmatter),
+      },
     });
     imports[imports.length - 1]!.key = deriveCanonicalSkillKey(companyId, imports[imports.length - 1]!);
   }
@@ -847,6 +900,7 @@ export async function readLocalSkillImportFromDirectory(
     ...(parsedMetadata ?? {}),
     sourceKind: "local_path",
     ...(options?.metadata ?? {}),
+    ...extractSkillContractMetadata(parsed.frontmatter),
   };
   const inventory = await collectLocalSkillInventory(resolvedSkillDir, options?.inventoryMode ?? "full");
 
@@ -1060,7 +1114,7 @@ async function readUrlSkillImports(
         trustLevel: deriveTrustLevel(inventory),
         compatibility: "compatible",
         fileInventory: inventory,
-        metadata,
+        metadata: { ...metadata, ...extractSkillContractMetadata(parsedMarkdown.frontmatter) },
       });
     }
     if (skills.length === 0) {
@@ -1086,6 +1140,7 @@ async function readUrlSkillImports(
     const metadata = {
       ...(skillKey ? { skillKey } : {}),
       sourceKind: "url",
+      ...extractSkillContractMetadata(parsedMarkdown.frontmatter),
     };
     const inventory: CompanySkillFileInventoryEntry[] = [{ path: "SKILL.md", kind: "skill" }];
     return {
@@ -1412,6 +1467,7 @@ function enrichSkill(skill: CompanySkill, attachedAgentCount: number, usedByAgen
     attachedAgentCount,
     usedByAgents,
     ...source,
+    ...getSkillContractBadges(skill.metadata),
   };
 }
 
@@ -1438,6 +1494,7 @@ function toCompanySkillListItem(skill: CompanySkill, attachedAgentCount: number)
     sourceLabel: source.sourceLabel,
     sourceBadge: source.sourceBadge,
     sourcePath: source.sourcePath,
+    ...getSkillContractBadges(skill.metadata),
   };
 }
 
