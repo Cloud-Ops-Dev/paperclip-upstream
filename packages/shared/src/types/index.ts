@@ -1,4 +1,16 @@
 export type { Company } from "./company.js";
+export type {
+  FeedbackVote,
+  FeedbackDataSharingPreference,
+  FeedbackTargetType,
+  FeedbackVoteValue,
+  FeedbackTrace,
+  FeedbackTraceStatus,
+  FeedbackTraceTargetSummary,
+  FeedbackTraceBundleCaptureStatus,
+  FeedbackTraceBundleFile,
+  FeedbackTraceBundle,
+} from "./feedback.js";
 export type { InstanceExperimentalSettings, InstanceGeneralSettings, InstanceSettings } from "./instance.js";
 export type {
   CompanySkillSourceType,
@@ -122,6 +134,8 @@ export type {
 } from "./secrets.js";
 export type {
   Routine,
+  RoutineVariable,
+  RoutineVariableDefaultValue,
   RoutineTrigger,
   RoutineRun,
   RoutineTriggerSecretMaterial,
@@ -133,6 +147,8 @@ export type {
 export type { CostEvent, CostSummary, CostByAgent, CostByProviderModel, CostByBiller, CostByAgentModel, CostWindowSpendRow, CostByProject } from "./cost.js";
 export type { FinanceEvent, FinanceSummary, FinanceByBiller, FinanceByKind } from "./finance.js";
 export type {
+  AgentWakeupResponse,
+  AgentWakeupSkipped,
   HeartbeatRun,
   HeartbeatRunEvent,
   AgentRuntimeState,
