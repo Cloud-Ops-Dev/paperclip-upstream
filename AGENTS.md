@@ -1,4 +1,14 @@
+---
+owner: Clayton
+last_reviewed: 2026-05-05
+source_of_truth_for: Paperclip operating contract for agents — extends IDE constitution
+supersedes: null
+---
+
 # AGENTS.md
+
+
+> **Why this exists.** Entry point for any agent in the Paperclip company-orchestrator repo. Inherits IDE constitution; Paperclip-specific rules below.
 
 Guidance for human and AI contributors working in this repository.
 
