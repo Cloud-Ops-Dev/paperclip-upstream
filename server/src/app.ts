@@ -130,6 +130,7 @@ export async function createApp(
     hostVersion?: string;
     localPluginDir?: string;
     pluginMigrationDb?: Db;
+    pluginRuntimeEnabled?: boolean;
     pluginWorkerManager?: PluginWorkerManager;
     betterAuthHandler?: express.RequestHandler;
     resolveSession?: (req: ExpressRequest) => Promise<BetterAuthSessionResult | null>;
@@ -402,8 +403,15 @@ export async function createApp(
 
   app.use(errorHandler);
 
-  jobCoordinator.start();
-  scheduler.start();
+  const pluginRuntimeEnabled = shouldStartPluginRuntime({
+    pluginRuntimeEnabled: opts.pluginRuntimeEnabled,
+  });
+  if (pluginRuntimeEnabled) {
+    jobCoordinator.start();
+    scheduler.start();
+  } else {
+    logger.warn("Plugin runtime disabled by PAPERCLIP_PLUGIN_RUNTIME_ENABLED=false");
+  }
   const feedbackExportTimer = opts.feedbackExportService
     ? setInterval(() => {
       void opts.feedbackExportService?.flushPendingFeedbackTraces().catch((err) => {
@@ -417,23 +425,26 @@ export async function createApp(
       logger.error({ err }, "Failed to flush pending feedback exports");
     });
   }
-  void toolDispatcher.initialize().catch((err) => {
-    logger.error({ err }, "Failed to initialize plugin tool dispatcher");
-  });
-  const devWatcher = createPluginDevWatcher(
-    lifecycle,
-    async (pluginId) => (await pluginRegistry.getById(pluginId))?.packagePath ?? null,
-  );
-  void loader.loadAll().then((result) => {
-    if (!result) return;
-    for (const loaded of result.results) {
-      if (devWatcher && loaded.success && loaded.plugin.packagePath) {
-        devWatcher.watch(loaded.plugin.id, loaded.plugin.packagePath);
+  let devWatcher: ReturnType<typeof createPluginDevWatcher> | null = null;
+  if (pluginRuntimeEnabled) {
+    devWatcher = createPluginDevWatcher(
+      lifecycle,
+      async (pluginId) => (await pluginRegistry.getById(pluginId))?.packagePath ?? null,
+    );
+    void toolDispatcher.initialize().catch((err) => {
+      logger.error({ err }, "Failed to initialize plugin tool dispatcher");
+    });
+    void loader.loadAll().then((result) => {
+      if (!result) return;
+      for (const loaded of result.results) {
+        if (devWatcher && loaded.success && loaded.plugin.packagePath) {
+          devWatcher.watch(loaded.plugin.id, loaded.plugin.packagePath);
+        }
       }
-    }
-  }).catch((err) => {
-    logger.error({ err }, "Failed to load ready plugins on startup");
-  });
+    }).catch((err) => {
+      logger.error({ err }, "Failed to load ready plugins on startup");
+    });
+  }
   process.once("exit", () => {
     if (feedbackExportTimer) clearInterval(feedbackExportTimer);
     devWatcher?.close();
@@ -446,4 +457,8 @@ export async function createApp(
   });
 
   return app;
+}
+
+export function shouldStartPluginRuntime(opts: { pluginRuntimeEnabled?: boolean }): boolean {
+  return opts.pluginRuntimeEnabled !== false;
 }
