@@ -447,6 +447,9 @@ const acpxSkillsCompanyLibrary: CompanySkillListItem[] = [
     sourceLabel: "Paperclip",
     sourceBadge: "paperclip",
     sourcePath: "skills/paperclip",
+    routingPriority: null,
+    maturity: null,
+    contractVersion: null,
   },
   {
     id: "skill-design-guide",
@@ -470,6 +473,9 @@ const acpxSkillsCompanyLibrary: CompanySkillListItem[] = [
     sourceLabel: "Local",
     sourceBadge: "local",
     sourcePath: "skills/design-guide",
+    routingPriority: null,
+    maturity: null,
+    contractVersion: null,
   },
   {
     id: "skill-mobile-qa",
@@ -493,6 +499,9 @@ const acpxSkillsCompanyLibrary: CompanySkillListItem[] = [
     sourceLabel: "Local",
     sourceBadge: "local",
     sourcePath: "skills/mobile-app-qa",
+    routingPriority: null,
+    maturity: null,
+    contractVersion: null,
   },
 ];
 

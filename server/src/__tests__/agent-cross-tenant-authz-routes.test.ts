@@ -245,6 +245,7 @@ async function requestApp(
     return await buildRequest(`http://127.0.0.1:${address.port}`);
   } finally {
     if (server.listening) {
+      server.closeAllConnections();
       await new Promise<void>((resolve, reject) => {
         server.close((error) => {
           if (error) reject(error);
@@ -373,5 +374,5 @@ describe.sequential("agent cross-tenant route authorization", () => {
     expect(res.body.error).toContain("Key not found");
     expect(mockAgentService.getKeyById).toHaveBeenCalledWith(keyId);
     expect(mockAgentService.revokeKey).not.toHaveBeenCalled();
-  });
+  }, 20_000);
 });
