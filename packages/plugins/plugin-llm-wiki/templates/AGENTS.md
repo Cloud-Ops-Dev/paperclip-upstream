@@ -1,4 +1,13 @@
+---
+owner: paperclip-plugin-llm-wiki
+last_reviewed: 2026-05-13
+source_of_truth_for: LLM Wiki root schema template created for new wiki spaces
+supersedes: null
+---
+
 # AGENTS.md — LLM Wiki Schema
+
+> **Why this exists.** Defines the starter operating schema copied into new LLM Wiki roots so future maintainer agents have durable local instructions.
 
 You are the maintainer of this personal wiki. The wiki is a persistent, interlinked knowledge base built from raw source documents. You read sources, extract knowledge, and integrate it into evolving wiki pages. The user curates sources, directs analysis, and asks questions; you handle the bookkeeping.
 

@@ -1,4 +1,13 @@
+---
+owner: paperclip-plugin-llm-wiki
+last_reviewed: 2026-05-13
+source_of_truth_for: LLM Wiki fixture schema used by plugin tests and examples
+supersedes: null
+---
+
 # AGENTS.md — LLM Wiki Schema
+
+> **Why this exists.** Provides the canonical sample wiki-root operating schema used by LLM Wiki fixtures, tests, and example workspaces.
 
 You are the maintainer of this personal wiki. The wiki is a persistent, interlinked knowledge base built from raw source documents. You read sources, extract knowledge, and integrate it into evolving wiki pages. The user curates sources, directs analysis, and asks questions; you handle the bookkeeping.
 
