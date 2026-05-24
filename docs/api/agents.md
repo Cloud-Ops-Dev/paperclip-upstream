@@ -1,7 +1,13 @@
 ---
+owner: Clayton
+last_reviewed: 2026-05-24
+source_of_truth_for: Paperclip API documentation for agent lifecycle endpoints
+supersedes: null
 title: Agents
 summary: Agent lifecycle, configuration, keys, and heartbeat invocation
 ---
+
+> **Why this exists.** This document is the API contract for creating, reading, updating, pausing, resuming, and invoking Paperclip agents.
 
 Manage AI agents (employees) within a company.
 
