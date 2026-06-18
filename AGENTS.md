@@ -1,6 +1,6 @@
 ---
 owner: Clayton
-last_reviewed: 2026-06-17
+last_reviewed: 2026-06-18
 source_of_truth_for: Paperclip operating contract for agents — extends IDE constitution
 supersedes: null
 ---
@@ -203,6 +203,7 @@ This is a fork of `paperclipai/paperclip` with QoL patches and an **external-onl
 - Register through **Board → Adapter manager** (same as Droid). Type remains `hermes_local` once the package is loaded.
 - UI uses generic **config-schema** + **ui-parser.js** from the package — no Hermes imports in `server/` or `ui/` source.
 - Optional: `file:` entry in `~/.paperclip/adapter-plugins.json` for local dev of the adapter repo.
+- Architecture decision and tradeoff rationale: `doc/plans/2026-06-18-hermes-adapter-packaging.md`.
 
 ### Local Dev
 
