@@ -182,27 +182,36 @@ async function writeFileAtomically(input: {
 
 async function ensureSymlink(target: string, source: string): Promise<void> {
   const resolvedSource = path.resolve(source);
-  const existing = await fs.lstat(target).catch(() => null);
-  if (!existing) {
-    await ensureParentDir(target);
-    await fs.symlink(resolvedSource, target);
-    return;
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const existing = await fs.lstat(target).catch(() => null);
+    if (!existing) {
+      await ensureParentDir(target);
+      try {
+        await fs.symlink(resolvedSource, target);
+        return;
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code === "EEXIST") continue;
+        throw err;
+      }
+    }
+
+    if (!existing.isSymbolicLink()) {
+      await fs.rm(target, { recursive: true, force: true });
+      continue;
+    }
+
+    const linkedPath = await fs.readlink(target).catch(() => null);
+    if (!linkedPath) return;
+
+    const resolvedLinkedPath = path.resolve(path.dirname(target), linkedPath);
+    if (resolvedLinkedPath === resolvedSource) return;
+
+    await fs.unlink(target).catch((err) => {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
+    });
   }
 
-  if (!existing.isSymbolicLink()) {
-    await fs.rm(target, { recursive: true, force: true });
-    await fs.symlink(resolvedSource, target);
-    return;
-  }
-
-  const linkedPath = await fs.readlink(target).catch(() => null);
-  if (!linkedPath) return;
-
-  const resolvedLinkedPath = path.resolve(path.dirname(target), linkedPath);
-  if (resolvedLinkedPath === resolvedSource) return;
-
-  await fs.unlink(target);
-  await fs.symlink(resolvedSource, target);
+  throw new Error(`Unable to prepare managed Codex auth symlink at ${target}`);
 }
 
 async function ensureCopiedFile(target: string, source: string): Promise<void> {
