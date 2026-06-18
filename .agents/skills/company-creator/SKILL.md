@@ -197,6 +197,24 @@ Write all files, then give a brief summary:
 
 The `.paperclip.yaml` file is the Paperclip vendor extension. It configures adapters and env inputs per agent.
 
+Use `.paperclip.yaml` only for Paperclip-specific runtime fidelity: adapter type,
+adapter config, environment inputs, routine triggers, workspace/runtime policy,
+permissions, budgets, and approval gates. Keep the portable company definition in
+`COMPANY.md`, `agents/*/AGENTS.md`, `projects/*/PROJECT.md`,
+`tasks/*/TASK.md`, and `skills/*/SKILL.md`.
+
+Do not export or generate live Paperclip database ids, timestamps, secret values,
+secret version refs, or machine-local absolute paths as canonical package data.
+If a package needs a local runtime path for a specific operator environment,
+declare it as a Paperclip extension input or documented deployment choice rather
+than hard-coding a workstation path.
+
+This skill creates new Agent Companies packages. For an existing live Paperclip
+company, use the Paperclip API/CLI and live company modernization workflow
+instead. You may use this skill's package rules as the target template standard,
+but do not treat package generation as a substitute for updating live company
+records.
+
 ### Adapter Rules
 
 **Do not specify an adapter unless the repo or user context warrants it.** If you don't know what adapter the user wants, omit the adapter block entirely — Paperclip will use its default. Specifying an unknown adapter type causes an import error.
@@ -209,6 +227,12 @@ Paperclip's supported adapter types (these are the ONLY valid values):
 - `cursor` — Cursor
 - `gemini_local` — Gemini CLI
 - `openclaw_gateway` — OpenClaw gateway
+
+External adapter plugins can add additional adapter types, such as an externally
+installed Hermes adapter that presents `hermes_local`. Only use a plugin adapter
+when the target Paperclip instance has that adapter installed and the user or repo
+context explicitly warrants it. Do not add built-in Hermes assumptions to generic
+company packages.
 
 Only set an adapter when:
 - The repo or its skills clearly target a specific runtime (e.g. gstack is built for Claude Code, so `claude_local` is appropriate)

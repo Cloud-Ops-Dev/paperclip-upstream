@@ -39,6 +39,22 @@ curl -sS "$PAPERCLIP_API_URL/llms/agent-configuration/claude_local.txt" \
   -H "Authorization: Bearer $PAPERCLIP_API_KEY"
 ```
 
+When using the CLI, prefer the current adapter discovery commands before
+drafting config:
+
+```sh
+pnpm paperclipai adapter config-schema <adapter-type>
+pnpm paperclipai adapter ui-parser <adapter-type>
+pnpm paperclipai adapter model-profiles <adapter-type> --company-id <company-id>
+pnpm paperclipai adapter detect-model <adapter-type> --company-id <company-id>
+```
+
+Treat the active execution host as authoritative. If Paperclip is running on a
+remote service host, do not reuse workstation-home paths in adapter config or
+project workspaces. Use service-host-valid paths such as
+`/home/<service-user>/...`, a project workspace, or a portable repo URL. If no
+valid target exists, stop and document the blocker instead of inventing a path.
+
 ### 3. Compare existing agent configurations
 
 ```sh
@@ -80,6 +96,11 @@ curl -sS "$PAPERCLIP_API_URL/llms/agent-icons.txt" \
 - `desiredSkills` from the company skill library when this role needs installed skills on day one
 - if any `desiredSkills` or adapter settings expand browser access, external-system reach, filesystem scope, or secret-handling capability, justify each one in the hire comment
 - adapter and runtime config aligned to this environment
+- execution-host-valid paths only; no stale workstation paths, no live database
+  ids as package defaults, and no secret version refs in reusable templates
+- for portable company packages, keep Paperclip-specific adapter/runtime/env
+  fidelity in `.paperclip.yaml` and keep the agent's portable role/instruction
+  content in `agents/<slug>/AGENTS.md`
 - leave timer heartbeats off by default; only set `runtimeConfig.heartbeat.enabled=true` with an `intervalSec` when the role genuinely needs scheduled recurring work or the user explicitly asked for it
 - if the role may handle private advisories or sensitive disclosures, confirm a confidential workflow exists first (dedicated skill or documented manual process)
 - capabilities

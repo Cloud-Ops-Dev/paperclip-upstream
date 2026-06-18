@@ -1,5 +1,5 @@
 ---
-owner: Clayton
+owner: Project Owner
 last_reviewed: 2026-06-18
 source_of_truth_for: Paperclip operating contract for agents — extends IDE constitution
 supersedes: null

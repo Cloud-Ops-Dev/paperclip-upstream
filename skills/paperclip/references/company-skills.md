@@ -19,6 +19,17 @@ Catalog install ≠ agent attach. Installing a catalog skill only adds the row t
 `company_skills`. The agent will not use it until you sync the agent's desired
 set.
 
+For future company templates, prefer portable skill references in
+`agents/<slug>/AGENTS.md` and source/provenance metadata on the skill package.
+Use `.paperclip.yaml` only for Paperclip-specific install or runtime fidelity.
+Do not copy live company skill database ids, local absolute paths, or
+environment-specific source locators into reusable packages.
+
+For existing live companies, modernization is a live Paperclip API/CLI operation:
+inspect the company library, install or update skills, then sync each agent's
+desired skills deliberately. Do not use the company-package generator as a
+substitute for live company updates.
+
 ## Permission Model
 
 - Company skill reads: any same-company actor

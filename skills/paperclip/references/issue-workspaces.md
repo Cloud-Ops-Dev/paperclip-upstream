@@ -20,6 +20,13 @@ Read `currentExecutionWorkspace`:
 
 If `currentExecutionWorkspace` is `null`, the issue does not currently have a realized execution workspace. For child/follow-up work, create the child with `parentId` or use `inheritExecutionWorkspaceFromIssueId` so Paperclip preserves workspace continuity.
 
+For local workspaces, the path must be valid on the host running Paperclip, not
+on the operator's desktop. In a service-host deployment, use
+`/home/<service-user>/...` paths or repo URLs; do not reuse operator-workstation
+home paths. If a path cannot be verified on the Paperclip host, stop and record
+the workspace as blocked instead of silently falling back to an arbitrary
+directory.
+
 ## Control Services
 
 Prefer Paperclip-managed runtime service controls over manual `pnpm dev &` or ad-hoc background processes. These endpoints keep service state, URLs, logs, and ownership visible to other agents and the board.

@@ -1,5 +1,5 @@
 ---
-owner: Clayton
+owner: Project Owner
 last_reviewed: 2026-05-24
 source_of_truth_for: Paperclip API documentation for agent lifecycle endpoints
 supersedes: null

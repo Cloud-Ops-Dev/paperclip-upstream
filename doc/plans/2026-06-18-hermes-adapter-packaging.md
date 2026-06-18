@@ -46,7 +46,7 @@ while still participating in Paperclip through the normal adapter surface.
 - Core bloat: Hermes-specific imports, config docs, parser behavior, and
   execution details make the control plane less generic.
 - Operational mismatch: Hermes has a separate lifecycle and surrounding systems,
-  especially in the Novique/clay-blade environment.
+  especially in Novique's service-host environment.
 - Plugin architecture validation: keeping Hermes external proves the adapter
   plugin path can carry serious runtimes, not just toy integrations.
 
