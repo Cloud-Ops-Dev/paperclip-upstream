@@ -3,7 +3,7 @@
 Date: 2026-06-18
 Status: active execution plan
 Tracking bead: `infra-v5b`
-Notion hub: `18 June Paperclip Update`
+OpenBrain Docs hub: `18 June Paperclip Update`
 
 ## Goal
 
@@ -159,7 +159,7 @@ Rules:
 
 ## Execution Phases
 
-1. Durable setup: Notion hub/subpages, beads epic/children, Open Brain capture.
+1. Durable setup: OpenBrain Docs hub/subpages, beads epic/children, Open Brain semantic-memory capture.
 2. Before-state inventory and gap matrix.
 3. Safe live updates: path/config reconciliation, status-preserving metadata
    cleanup, workspace metadata fixes.
@@ -170,7 +170,7 @@ Rules:
 
 ## Validation Checklist
 
-- Notion hub and subpages exist.
+- OpenBrain Docs hub and subpages exist.
 - Beads epic `infra-v5b` and child beads exist on the service host.
 - Open Brain contains the modernization decision memory.
 - All five companies have before/after state documented.
