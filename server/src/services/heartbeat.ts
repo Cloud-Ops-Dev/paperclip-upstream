@@ -10354,6 +10354,39 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
       return null;
     }
 
+    if (source === "automation" && triggerDetail === "system" && issueId) {
+      const automationRunCountRow = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(heartbeatRuns)
+        .where(
+          and(
+            eq(heartbeatRuns.companyId, agent.companyId),
+            eq(heartbeatRuns.invocationSource, "automation"),
+            eq(heartbeatRuns.triggerDetail, "system"),
+            sql`${heartbeatRuns.contextSnapshot} ->> 'issueId' = ${issueId}`,
+          ),
+        )
+        .then((rows) => rows[0] ?? null);
+      const automationRunCount = Number(automationRunCountRow?.count ?? 0);
+      if (automationRunCount >= issueContinuationCap) {
+        await writeSkippedRequest("issue.continuationBudget.exhausted", {
+          error: `Wake suppressed because issue ${issueId} already has ${automationRunCount} system automation runs`,
+        });
+        logger.warn(
+          {
+            agentId,
+            issueId,
+            automationRunCount,
+            issueContinuationCap,
+            source,
+            triggerDetail,
+          },
+          "enqueueWakeup: issue continuation budget exhausted; skipping automation wake",
+        );
+        return null;
+      }
+    }
+
     if (issueId) {
       const activePauseHold = await treeControlSvc.getActivePauseHoldGate(agent.companyId, issueId);
       if (activePauseHold) {
