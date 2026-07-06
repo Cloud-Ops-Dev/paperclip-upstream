@@ -1420,7 +1420,11 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
       return row && row.status !== "queued" ? row : null;
     }, 2_000);
     expect(["running", "succeeded"]).toContain(startedRun?.status);
-    expect(mockAdapterExecute.mock.calls.length).toBeGreaterThan(executeCallsBeforeReap);
+    await waitForValue(() =>
+      mockAdapterExecute.mock.calls.length > executeCallsBeforeReap
+        ? mockAdapterExecute.mock.calls.length
+        : null,
+    2_000);
     if (retryRun) {
       const settledRun = await waitForRunToSettle(heartbeat, retryRun.id, 2_000);
       expect(settledRun?.status).toBe("succeeded");
